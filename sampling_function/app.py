@@ -161,9 +161,7 @@ def lambda_handler(event, context):
                 count += 1
                 print("We found one")
 
-    
-
-    
+        
     return {
         "statusCode": 200,
         "body": json.dumps({"unique_count": count}),
