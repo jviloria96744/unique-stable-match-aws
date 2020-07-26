@@ -1,3 +1,3 @@
 {
-  "body": "{\"num_workers\": 10, \"num_firms\": 10, \"num_seeds\": 10, \"num_samples\": 1000}"
+  "body": "{\"num_workers\": 10, \"num_firms\": 10, \"num_seeds\": 1000, \"num_samples\": 1000}"
 }
