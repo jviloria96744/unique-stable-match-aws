@@ -1,5 +1,6 @@
 import os
 import json
+import uuid
 import random
 import itertools as it
 import re
@@ -40,23 +41,29 @@ def generate_seeds(num_workers, num_firms, num_seeds):
     workers = [f'W{worker + 1}' for worker in range(num_workers)]
     firms = [f'F{firm + 1}' for firm in range(num_firms)]
 
-    seed_markets = []
+    seed_batches = {}
     id_set = set()
     for i in range(num_seeds):
+        if i % 10 == 0:
+            seed_batches[f"batch-{i % 10}"] = []
+
         while True:
             
             potential_seed = generate_seed(workers, firms)
             market_id = create_id_from_market(potential_seed)
 
             if market_id not in id_set:
-                seed_markets.append({
-                    "id": market_id,
-                    "preferences": potential_seed
+                seed_batches[f"batch-{i % 10}"].append({
+                    "Id": uuid.uuid4(),
+                    "MessageBody": json.dumps({
+                        "id": market_id,
+                        "preferences": potential_seed    
+                    })
                 })
                 id_set.add(market_id)
                 break
             
-    return seed_markets
+    return seed_batches
 
 
 def create_id_from_market(market):
@@ -67,9 +74,9 @@ def create_id_from_market(market):
     return market_id
 
 
-def send_messages(seed_markets):
-    for market in seed_markets:
-        response = sqs.send_message(QueueUrl=os.environ["QUEUE_URL"], MessageBody=json.dumps(market))
+def send_messages(seed_batches):
+    for batch_id, batch in seed_batches.items():
+        response = sqs.send_message_batch(QueueUrl=os.environ["QUEUE_URL"], Entries=batch)
 
 
 def lambda_handler(event, context):
@@ -95,11 +102,11 @@ def lambda_handler(event, context):
 
     logger.info(data)
 
-    seed_markets = generate_seeds(data["num_workers"], data["num_firms"], data["num_seeds"])
+    seed_batches = generate_seeds(data["num_workers"], data["num_firms"], data["num_seeds"])
 
     logger.info(len(seed_markets))
 
-    send_messages(seed_markets)
+    send_messages(seed_batches)
 
     return {
         "statusCode": 200,
