@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: SAM Template for Unique Stable Matching Workflow
+
+Globals:
+  Function:
+    Timeout: 30
+
+Resources:
+  SeedMarketGeneratorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: seed_market_generator/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Policies:
+        - SQSSendMessagePolicy:
+            QueueName: !Ref SeedMarketQueue
+      Environment:
+        Variables:
+          QUEUE_URL: !Ref SeedMarketQueue
+
+  SeedMarketQueue:
+    Type: AWS::SQS::Queue
+
+Outputs:
+  SeedMarketGeneratorFunctionOutput:
+    Description: "Seed Market Generator Function ARN"
+    Value: !GetAtt SeedMarketGeneratorFunction.Arn
+  SeedMarketGeneratorFunctionIamRole:
+    Description: "Implicit IAM Role created for Seed Market Generator Function"
+    Value: !GetAtt SeedMarketGeneratorFunctionRole.Arn
+  SeedMarketQueueOutput:
+    Description: "Seed Market Queue ARN"
+    Value: !GetAtt SeedMarketQueue.Arn
