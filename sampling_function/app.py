@@ -161,7 +161,7 @@ def lambda_handler(event, context):
                 count += 1
                 table.put_item(Item={
                     "MarketId": k,
-                    "MarketSize": str(body["num_side"])
+                    "MarketSize": str(body["num_side"]),
                     "preferences": v
                 })
 
