@@ -45,7 +45,7 @@ def generate_seeds(num_workers, num_firms, num_seeds):
     id_set = set()
     for i in range(num_seeds):
         if i % 10 == 0:
-            seed_batches[f"batch-{i % 10}"] = []
+            seed_batches[f"batch-{i // 10}"] = []
 
         while True:
             
@@ -53,7 +53,7 @@ def generate_seeds(num_workers, num_firms, num_seeds):
             market_id = create_id_from_market(potential_seed)
 
             if market_id not in id_set:
-                seed_batches[f"batch-{i % 10}"].append({
+                seed_batches[f"batch-{i // 10}"].append({
                     "Id": uuid.uuid4(),
                     "MessageBody": json.dumps({
                         "id": market_id,
