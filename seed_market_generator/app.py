@@ -37,7 +37,7 @@ def generate_seed(workers, firms):
     }
 
 
-def generate_seeds(num_workers, num_firms, num_seeds):
+def generate_seeds(num_workers, num_firms, num_seeds, num_samples):
     workers = [f'W{worker + 1}' for worker in range(num_workers)]
     firms = [f'F{firm + 1}' for firm in range(num_firms)]
 
@@ -57,7 +57,9 @@ def generate_seeds(num_workers, num_firms, num_seeds):
                     "Id": str(uuid.uuid4()),
                     "MessageBody": json.dumps({
                         "id": market_id,
-                        "preferences": potential_seed    
+                        "preferences": potential_seed,
+                        "num_side": num_workers,
+                        "num_samples": num_samples    
                     })
                 })
                 id_set.add(market_id)
@@ -102,7 +104,7 @@ def lambda_handler(event, context):
 
     logger.info(data)
 
-    seed_batches = generate_seeds(data["num_workers"], data["num_firms"], data["num_seeds"])
+    seed_batches = generate_seeds(data["num_workers"], data["num_firms"], data["num_seeds"], data["num_samples"])
 
     logger.info(len(seed_batches))
 

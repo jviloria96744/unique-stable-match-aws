@@ -23,6 +23,24 @@ Resources:
   SeedMarketQueue:
     Type: AWS::SQS::Queue
 
+  SamplingFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: sampling_function/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Events:
+        SQSGetSeeds:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt SeedMarketQueue.Arn
+            BatchSize: 10
+            Enabled: true
+
+      Environment:
+        Variables:
+          QUEUE_URL: !Ref SeedMarketQueue
+
 Outputs:
   SeedMarketGeneratorFunctionOutput:
     Description: "Seed Market Generator Function ARN"
@@ -33,3 +51,9 @@ Outputs:
   SeedMarketQueueOutput:
     Description: "Seed Market Queue ARN"
     Value: !GetAtt SeedMarketQueue.Arn
+  SamplingFunctionOutput:
+    Description: "Sampling Function ARN"
+    Value: !GetAtt SamplingFunction.Arn
+  SamplingFunctionIamRole:
+    Description: "Implicit IAM Role created for Sampling Function"
+    Value: !GetAtt SamplingFunctionRole.Arn
