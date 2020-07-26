@@ -104,7 +104,7 @@ def lambda_handler(event, context):
 
     seed_batches = generate_seeds(data["num_workers"], data["num_firms"], data["num_seeds"])
 
-    logger.info(len(seed_markets))
+    logger.info(len(seed_batches))
 
     send_messages(seed_batches)
 
