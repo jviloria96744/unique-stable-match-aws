@@ -6,6 +6,7 @@ on:
       - "template.yaml"
       - ".github/workflows/main.yml"
       - "tests/**"
+      - "sampling_function/**"
 jobs:
   build:
     runs-on: ubuntu-latest
