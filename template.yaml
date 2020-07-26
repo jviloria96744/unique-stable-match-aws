@@ -23,23 +23,37 @@ Resources:
   SeedMarketQueue:
     Type: AWS::SQS::Queue
 
+  DAResultsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: "MarketId"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "MarketId"
+          KeyType: "HASH"
+
   SamplingFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: sampling_function/
       Handler: app.lambda_handler
       Runtime: python3.8
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref DAResultsTable
       Events:
         SQSGetSeeds:
           Type: SQS
           Properties:
             Queue: !GetAtt SeedMarketQueue.Arn
-            BatchSize: 10
+            BatchSize: 3
             Enabled: true
 
       Environment:
         Variables:
-          QUEUE_URL: !Ref SeedMarketQueue
+          TABLE_NAME: !Ref DAResultsTable
 
 Outputs:
   SeedMarketGeneratorFunctionOutput:
@@ -57,3 +71,6 @@ Outputs:
   SamplingFunctionIamRole:
     Description: "Implicit IAM Role created for Sampling Function"
     Value: !GetAtt SamplingFunctionRole.Arn
+  DAResultsTableOutput:
+    Description: "DynamoDB Table created to write DA results to"
+    Value: !GetAtt DAResultsTable.Arn

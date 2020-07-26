@@ -9,6 +9,9 @@ import logging
 import boto3
 from pythonjsonlogger import jsonlogger
 
+dynamodb = boto3.resource("dynamodb", os.environ["AWS_REGION"])
+table = dynamodb.Table(os.environ["TABLE_NAME"])
+
 
 def setup_logging(log_level):
     logger = logging.getLogger()
@@ -145,6 +148,7 @@ def lambda_handler(event, context):
 
     setup_logging(logging.INFO)
     logger = logging.getLogger()
+    logger.info({"DynamoDB Table Name": os.environ["TABLE_NAME"]})
 
     count = 0
     for record in event['Records']:
@@ -155,9 +159,13 @@ def lambda_handler(event, context):
         for k, v in samples_dict.items():
             if has_unique_stable_match(v):
                 count += 1
-                print("We found one")
+                table.put_item(Item={
+                    "MarketId": k,
+                    "MarketSize": str(body["num_side"])
+                    "preferences": v
+                })
 
-        
+    logger.info({"Unique_Stable_Matches": count})    
     return {
         "statusCode": 200,
         "body": json.dumps({"unique_count": count}),
