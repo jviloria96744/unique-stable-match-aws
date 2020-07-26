@@ -54,7 +54,7 @@ def generate_seeds(num_workers, num_firms, num_seeds):
 
             if market_id not in id_set:
                 seed_batches[f"batch-{i // 10}"].append({
-                    "Id": uuid.uuid4(),
+                    "Id": str(uuid.uuid4()),
                     "MessageBody": json.dumps({
                         "id": market_id,
                         "preferences": potential_seed    
