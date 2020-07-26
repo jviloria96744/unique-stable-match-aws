@@ -151,11 +151,7 @@ def lambda_handler(event, context):
         body = json.loads(record["body"])
         logger.info(body)
 
-        seed_id = record["body"]["id"]
-        seed = json.loads(record["body"]["preferences"])
-        num_side = int(record["body"]["num_side"])
-
-        samples_dict = generate_samples_from_seed(body["preferences"], body["id"], int(body["num_samples"]), True)
+        samples_dict = generate_samples_from_seed(body["preferences"], body["id"], body["num_samples"], True)
         for k, v in samples_dict.items():
             if has_unique_stable_match(v):
                 count += 1
