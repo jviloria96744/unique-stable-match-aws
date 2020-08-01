@@ -108,13 +108,14 @@ def gale_shapley(prefs):
                     proposals[firm].append(matches[firm])
                     old_match = matches[firm]
                     available_suitors.append(old_match)
+
+                    matches[firm] = best_proposal
+                    matches[best_proposal] = firm
+                    available_suitors.remove(best_proposal)
                 
-                matches[firm] = best_proposal
-                matches[best_proposal] = firm
-                available_suitors.remove(best_proposal)
 
                 for worker in proposals[firm]:
-                    if worker != best_proposal:
+                    if worker != matches[firm]:
                         rejections[worker].add(firm)
 
     return matches
@@ -154,6 +155,7 @@ def lambda_handler(event, context):
     for record in event['Records']:
         body = json.loads(record["body"])
         logger.info(body)
+
 
         samples_dict = generate_samples_from_seed(body["preferences"], body["id"], body["num_samples"], True)
         for k, v in samples_dict.items():
