@@ -51,7 +51,7 @@ Resources:
           Properties:
             Queue: !GetAtt SeedMarketQueue.Arn
             BatchSize: 1
-            Enabled: false
+            Enabled: true
 
       Environment:
         Variables:
