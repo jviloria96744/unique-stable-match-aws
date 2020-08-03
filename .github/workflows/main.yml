@@ -16,7 +16,7 @@ jobs:
           python-version: "3.8"
       - name: Run Python Tests
         # run: pip3 install pytest boto3 moto python-json-logger && python3 -m pytest tests/ -v
-        run: echo "Run Python Tests"
+        run: pip3 install pytest && python3 -m pytest tests/ -v
       - uses: actions/checkout@v1
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
